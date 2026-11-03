@@ -1,0 +1,126 @@
+import fs from 'fs';
+import path from 'path';
+import sharp from 'sharp';
+
+const publicDir = path.resolve(process.cwd(), 'public');
+if (!fs.existsSync(publicDir)) {
+  fs.mkdirSync(publicDir, { recursive: true });
+}
+
+// Crisp modern brand SVG for LifeLog
+const svgContent = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0E1424"/>
+      <stop offset="50%" stop-color="#070A12"/>
+      <stop offset="100%" stop-color="#05070D"/>
+    </linearGradient>
+    <linearGradient id="accentGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#91A8FF"/>
+      <stop offset="50%" stop-color="#7C5CFC"/>
+      <stop offset="100%" stop-color="#35D6A0"/>
+    </linearGradient>
+    <linearGradient id="glowGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#91A8FF" stop-opacity="0.4"/>
+      <stop offset="100%" stop-color="#7C5CFC" stop-opacity="0"/>
+    </linearGradient>
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="16" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="512" height="512" rx="112" fill="url(#bgGrad)"/>
+  
+  <!-- Subtle glass frame border -->
+  <rect x="6" y="6" width="500" height="500" rx="106" fill="none" stroke="#91A8FF" stroke-opacity="0.15" stroke-width="4"/>
+
+  <!-- Background Glow Orb -->
+  <circle cx="256" cy="256" r="160" fill="url(#glowGrad)" filter="url(#glow)"/>
+
+  <!-- Concentric biometric/productivity rings -->
+  <circle cx="256" cy="256" r="170" fill="none" stroke="#91A8FF" stroke-opacity="0.12" stroke-dasharray="8 8" stroke-width="3"/>
+  <circle cx="256" cy="256" r="130" fill="none" stroke="#7C5CFC" stroke-opacity="0.2" stroke-dasharray="12 6" stroke-width="3"/>
+
+  <!-- Modern stylized "L" & Infinity / Spark emblem -->
+  <path d="M190 140 C190 126 202 116 216 116 L224 116 C238 116 250 128 250 142 L250 286 C250 300 262 312 276 312 L350 312 C364 312 376 324 376 338 L376 346 C376 360 364 372 350 372 L216 372 C184 372 160 348 160 316 L160 170 C160 154 174 140 190 140 Z" 
+        fill="url(#accentGrad)" filter="url(#glow)"/>
+
+  <!-- Energy node dot -->
+  <circle cx="348" cy="230" r="14" fill="#35D6A0" filter="url(#glow)"/>
+  <!-- Focus star -->
+  <path d="M310 160 L316 174 L330 180 L316 186 L310 200 L304 186 L290 180 L304 174 Z" fill="#91A8FF"/>
+</svg>`;
+
+// Safe-zone padded maskable version (extra margin for circular cropping)
+const maskableSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0E1424"/>
+      <stop offset="50%" stop-color="#070A12"/>
+      <stop offset="100%" stop-color="#05070D"/>
+    </linearGradient>
+    <linearGradient id="accentGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#91A8FF"/>
+      <stop offset="50%" stop-color="#7C5CFC"/>
+      <stop offset="100%" stop-color="#35D6A0"/>
+    </linearGradient>
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="12" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+  </defs>
+
+  <rect width="512" height="512" fill="#070A12"/>
+  
+  <!-- Scaled down to safe 75% center -->
+  <g transform="translate(64, 64) scale(0.75)">
+    <rect width="512" height="512" rx="112" fill="url(#bgGrad)"/>
+    <circle cx="256" cy="256" r="160" fill="#91A8FF" fill-opacity="0.15" filter="url(#glow)"/>
+    <path d="M190 140 C190 126 202 116 216 116 L224 116 C238 116 250 128 250 142 L250 286 C250 300 262 312 276 312 L350 312 C364 312 376 324 376 338 L376 346 C376 360 364 372 350 372 L216 372 C184 372 160 348 160 316 L160 170 C160 154 174 140 190 140 Z" fill="url(#accentGrad)" filter="url(#glow)"/>
+    <circle cx="348" cy="230" r="14" fill="#35D6A0"/>
+    <path d="M310 160 L316 174 L330 180 L316 186 L310 200 L304 186 L290 180 L304 174 Z" fill="#91A8FF"/>
+  </g>
+</svg>`;
+
+async function generateAssets() {
+  fs.writeFileSync(path.join(publicDir, 'icon.svg'), svgContent, 'utf-8');
+  console.log('Saved icon.svg');
+
+  const svgBuffer = Buffer.from(svgContent);
+  const maskableBuffer = Buffer.from(maskableSvg);
+
+  // 192x192
+  await sharp(svgBuffer)
+    .resize(192, 192)
+    .png()
+    .toFile(path.join(publicDir, 'pwa-192x192.png'));
+  console.log('Saved pwa-192x192.png');
+
+  // 512x512
+  await sharp(svgBuffer)
+    .resize(512, 512)
+    .png()
+    .toFile(path.join(publicDir, 'pwa-512x512.png'));
+  console.log('Saved pwa-512x512.png');
+
+  // Apple touch icon 180x180
+  await sharp(svgBuffer)
+    .resize(180, 180)
+    .png()
+    .toFile(path.join(publicDir, 'apple-touch-icon.png'));
+  console.log('Saved apple-touch-icon.png');
+
+  // 512x512 maskable
+  await sharp(maskableBuffer)
+    .resize(512, 512)
+    .png()
+    .toFile(path.join(publicDir, 'pwa-maskable-512x512.png'));
+  console.log('Saved pwa-maskable-512x512.png');
+}
+
+generateAssets().catch((err) => {
+  console.error(err);
+  process.exit(1);
+});

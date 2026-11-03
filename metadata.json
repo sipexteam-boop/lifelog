@@ -1,0 +1,6 @@
+{
+  "name": "LifeLog",
+  "description": "سیستم عامل جامع و هوشمند مدیریت زندگی، کارها، عادات، خواب، تمرکز و ژورنال شخصی",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

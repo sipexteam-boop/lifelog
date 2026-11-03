@@ -1,0 +1,120 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --bg-main: #070A12;
+    --surface-secondary: #101521;
+    --accent: #91A8FF;
+    --accent-secondary: #7C5CFC;
+    --success: #35D6A0;
+    --warning: #FFBD69;
+    --error: #FF6B82;
+    --font-sans: 'Vazirmatn', 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  }
+
+  html {
+    font-family: var(--font-sans);
+    background-color: var(--bg-main);
+    color: #F1F5F9;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* Smooth custom scrollbars */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: rgba(145, 168, 255, 0.15);
+    border-radius: 9999px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgba(145, 168, 255, 0.35);
+  }
+}
+
+/* Glassmorphism system */
+.glass-panel {
+  background: rgba(16, 21, 33, 0.72);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 1px solid rgba(145, 168, 255, 0.12);
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5), inset 0 1px 0 0 rgba(255, 255, 255, 0.05);
+}
+
+.glass-panel-subtle {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.glass-button {
+  background: rgba(145, 168, 255, 0.1);
+  border: 1px solid rgba(145, 168, 255, 0.25);
+  backdrop-filter: blur(12px);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.glass-button:hover {
+  background: rgba(145, 168, 255, 0.18);
+  border-color: rgba(145, 168, 255, 0.4);
+  transform: translateY(-1px);
+}
+
+.glass-button:active {
+  transform: translateY(0px) scale(0.98);
+}
+
+.glass-input {
+  background: rgba(16, 21, 33, 0.85);
+  border: 1px solid rgba(145, 168, 255, 0.16);
+  color: #F1F5F9;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.glass-input:focus {
+  border-color: #91A8FF;
+  box-shadow: 0 0 0 3px rgba(145, 168, 255, 0.2);
+}
+
+/* Light mode overrides when html has class 'light' */
+html.light {
+  --bg-main: #F4F6FB;
+  --surface-secondary: #FFFFFF;
+}
+
+html.light body {
+  background-color: #F4F6FB;
+  color: #0F172A;
+}
+
+html.light .glass-panel {
+  background: rgba(255, 255, 255, 0.82);
+  border: 1px solid rgba(145, 168, 255, 0.2);
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.08);
+}
+
+html.light .glass-panel-subtle {
+  background: rgba(0, 0, 0, 0.03);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+html.light .glass-input {
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(145, 168, 255, 0.3);
+  color: #0F172A;
+}
+
+/* Safe area support for mobile screens */
+.safe-pb {
+  padding-bottom: calc(env(safe-area-inset-bottom, 16px) + 72px);
+}
+
+.safe-pt {
+  padding-top: max(env(safe-area-inset-top, 0px), 12px);
+}
