@@ -15,7 +15,7 @@ void main() {
       expect(jalali.monthName, 'فروردین');
     });
 
-    test('Persian numerals mapping', () {
+    test('Persian numerals mapping and reversal', () {
       expect(PersianNumbers.toPersian('12345'), '۱۲۳۴۵');
       expect(PersianNumbers.toPersian('2025/03/21'), '۲۰۲۵/۰۳/۲۱');
       expect(PersianNumbers.toEnglish('۱۲۳۴۵'), '12345');
@@ -28,18 +28,19 @@ void main() {
         id: 'task-test-1',
         title: 'بررسی کدهای فلاتر',
         description: 'تست جامع پایگاه‌داده و مدل‌ها',
-        category: TaskCategory.work,
-        priority: TaskPriority.high,
-        status: TaskStatus.inProgress,
-        plannedStart: DateTime(2025, 4, 1, 9, 0),
-        plannedEnd: DateTime(2025, 4, 1, 10, 30),
+        category: 'work',
+        priority: 'high',
+        status: 'in_progress',
+        plannedDate: '2025-04-01',
+        plannedStartTime: '09:00',
+        plannedEndTime: '10:30',
         tags: ['flutter', 'code-review'],
         subtasks: [
-          Subtask(id: 'sub-1', title: 'تست SQLite', isCompleted: true),
-          Subtask(id: 'sub-2', title: 'تست تم دارک گلس', isCompleted: false),
+          Subtask(id: 'sub-1', title: 'تست SQLite', completed: true),
+          Subtask(id: 'sub-2', title: 'تست تم دارک گلس', completed: false),
         ],
-        createdAt: DateTime(2025, 4, 1, 8, 30),
-        updatedAt: DateTime(2025, 4, 1, 8, 30),
+        createdAt: '2025-04-01T08:30:00.000Z',
+        updatedAt: '2025-04-01T08:30:00.000Z',
       );
 
       final map = task.toMap();
@@ -47,12 +48,12 @@ void main() {
 
       expect(restored.id, task.id);
       expect(restored.title, task.title);
-      expect(restored.category, TaskCategory.work);
-      expect(restored.priority, TaskPriority.high);
-      expect(restored.status, TaskStatus.inProgress);
+      expect(restored.category, 'work');
+      expect(restored.priority, 'high');
+      expect(restored.status, 'in_progress');
       expect(restored.subtasks.length, 2);
-      expect(restored.subtasks[0].isCompleted, true);
-      expect(restored.subtasks[1].isCompleted, false);
+      expect(restored.subtasks[0].completed, true);
+      expect(restored.subtasks[1].completed, false);
       expect(restored.tags.contains('flutter'), true);
     });
   });

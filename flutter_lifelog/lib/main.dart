@@ -5,7 +5,6 @@ import 'package:provider/provider.dart';
 
 import 'database/app_database.dart';
 import 'providers/app_state.dart';
-import 'services/biometric_service.dart';
 import 'services/notification_service.dart';
 import 'theme/app_colors.dart';
 import 'screens/today_screen.dart';
@@ -76,86 +75,38 @@ class LifeLogApp extends StatelessWidget {
   }
 }
 
-class AppRootGate extends StatefulWidget {
+class AppRootGate extends StatelessWidget {
   const AppRootGate({super.key});
 
   @override
-  State<AppRootGate> createState() => _AppRootGateState();
-}
-
-class _AppRootGateState extends State<AppRootGate> {
-  bool _isUnlocked = false;
-
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _checkSecurityLock();
-    });
-  }
-
-  void _checkSecurityLock() async {
-    final state = Provider.of<AppState>(context, listen: false);
-    if (!state.settings.securityLockEnabled) {
-      setState(() => _isUnlocked = true);
-      return;
-    }
-
-    // Auto-prompt biometric if available
-    if (state.settings.biometricEnabled) {
-      final bio = BiometricService.instance;
-      final available = await bio.isBiometricAvailable();
-      if (available) {
-        final success = await bio.authenticate(
-          reason: 'احراز هویت بیومتریک برای ورود به برنامه لایف‌لاگ',
-        );
-        if (success && mounted) {
-          setState(() => _isUnlocked = true);
-          return;
-        }
-      }
-    }
-  }
-
-  @override
   Widget build(BuildContext context) {
-    final state = Provider.of<AppState>(context);
+    final state = context.watch<AppState>();
 
     if (state.isLoading) {
       return const Scaffold(
         backgroundColor: AppColors.background,
         body: Center(
           child: CircularProgressIndicator(
-            color: AppColors.primaryAccent,
+            color: AppColors.accent,
             strokeWidth: 2.5,
           ),
         ),
       );
     }
 
-    if (state.settings.securityLockEnabled && !_isUnlocked) {
-      return PinLockScreen(
-        onSuccess: () {
-          setState(() => _isUnlocked = true);
-        },
-      );
+    // AppState manages the locking/unlocking lifecycle
+    if (state.isLocked) {
+      return const PinLockScreen();
     }
 
     return const MainNavigationScaffold();
   }
 }
 
-class MainNavigationScaffold extends StatefulWidget {
+class MainNavigationScaffold extends StatelessWidget {
   const MainNavigationScaffold({super.key});
 
-  @override
-  State<MainNavigationScaffold> createState() => _MainNavigationScaffoldState();
-}
-
-class _MainNavigationScaffoldState extends State<MainNavigationScaffold> {
-  int _currentIndex = 0;
-
-  final List<Widget> _screens = const [
+  static const List<Widget> _screens = [
     TodayScreen(),
     CalendarScreen(),
     TasksScreen(),
@@ -165,6 +116,9 @@ class _MainNavigationScaffoldState extends State<MainNavigationScaffold> {
 
   @override
   Widget build(BuildContext context) {
+    final state = context.watch<AppState>();
+    final currentIndex = state.activeNavIndex;
+
     return Scaffold(
       backgroundColor: AppColors.background,
       body: Stack(
@@ -180,7 +134,7 @@ class _MainNavigationScaffoldState extends State<MainNavigationScaffold> {
                 shape: BoxShape.circle,
                 gradient: RadialGradient(
                   colors: [
-                    AppColors.primaryAccent.withValues(alpha: 0.12),
+                    AppColors.accent.withOpacity(0.12),
                     Colors.transparent,
                   ],
                 ),
@@ -197,7 +151,7 @@ class _MainNavigationScaffoldState extends State<MainNavigationScaffold> {
                 shape: BoxShape.circle,
                 gradient: RadialGradient(
                   colors: [
-                    AppColors.secondaryAccent.withValues(alpha: 0.08),
+                    AppColors.secondaryAccent.withOpacity(0.08),
                     Colors.transparent,
                   ],
                 ),
@@ -209,22 +163,17 @@ class _MainNavigationScaffoldState extends State<MainNavigationScaffold> {
           SafeArea(
             bottom: false,
             child: IndexedStack(
-              index: _currentIndex,
+              index: currentIndex,
               children: _screens,
             ),
           ),
 
           // Floating Glass Bottom Navigation
-          Positioned(
+          const Positioned(
             bottom: 0,
             left: 0,
             right: 0,
-            child: ModernBottomNavBar(
-              currentIndex: _currentIndex,
-              onTap: (index) {
-                setState(() => _currentIndex = index);
-              },
-            ),
+            child: BottomNavBarWidget(),
           ),
         ],
       ),

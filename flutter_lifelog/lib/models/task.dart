@@ -11,6 +11,9 @@ class Subtask {
     this.completed = false,
   });
 
+  bool get isCompleted => completed;
+  set isCompleted(bool val) => completed = val;
+
   Map<String, dynamic> toMap() => {
     'id': id,
     'title': title,

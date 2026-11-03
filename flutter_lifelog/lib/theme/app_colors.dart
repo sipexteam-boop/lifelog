@@ -6,6 +6,7 @@ class AppColors {
   static const Color surfaceCard = Color(0xFF141A29);
   
   static const Color accent = Color(0xFF91A8FF);
+  static const Color primaryAccent = Color(0xFF91A8FF);
   static const Color secondaryAccent = Color(0xFF7C5CFC);
   static const Color success = Color(0xFF35D6A0);
   static const Color warning = Color(0xFFFFBD69);
@@ -31,7 +32,6 @@ class AppTheme {
         primary: AppColors.accent,
         secondary: AppColors.secondaryAccent,
         surface: AppColors.surface,
-        background: AppColors.background,
         error: AppColors.error,
       ),
       appBarTheme: const AppBarTheme(

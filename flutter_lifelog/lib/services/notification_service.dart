@@ -1,14 +1,31 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 class NotificationService {
+  static final NotificationService instance = NotificationService._internal();
+  NotificationService._internal();
+  factory NotificationService() => instance;
+
   static final FlutterLocalNotificationsPlugin _notificationsPlugin =
       FlutterLocalNotificationsPlugin();
 
-  static Future<void> init() async {
+  Future<void> init() async {
     const androidSettings = AndroidInitializationSettings('@mipmap/ic_launcher');
     const initSettings = InitializationSettings(android: androidSettings);
 
     await _notificationsPlugin.initialize(initSettings);
+  }
+
+  static Future<void> initialize() async {
+    await instance.init();
+  }
+
+  Future<void> show({
+    required int id,
+    required String title,
+    required String body,
+  }) async {
+    await showNotification(id: id, title: title, body: body);
   }
 
   static Future<void> showNotification({
@@ -25,7 +42,7 @@ class NotificationService {
       color: Color(0xFF91A8FF),
     );
 
-    const details = NotificationSettings(android: androidDetails);
-    await _notificationsPlugin.show(id, title, body, const NotificationDetails(android: androidDetails));
+    const details = NotificationDetails(android: androidDetails);
+    await _notificationsPlugin.show(id, title, body, details);
   }
 }

@@ -7,7 +7,9 @@ import '../services/biometric_service.dart';
 import '../utils/persian_numbers.dart';
 
 class PinLockScreen extends StatefulWidget {
-  const PinLockScreen({super.key});
+  final VoidCallback? onSuccess;
+
+  const PinLockScreen({super.key, this.onSuccess});
 
   @override
   State<PinLockScreen> createState() => _PinLockScreenState();
@@ -29,6 +31,7 @@ class _PinLockScreenState extends State<PinLockScreen> {
       final success = await BiometricService.authenticate();
       if (success && mounted) {
         state.unlockApp();
+        widget.onSuccess?.call();
       }
     }
   }
@@ -46,6 +49,7 @@ class _PinLockScreenState extends State<PinLockScreen> {
     if (_enteredPin.length >= 4 && targetHash != null) {
       if (CryptoUtils.verifyPin(_enteredPin, targetHash)) {
         state.unlockApp();
+        widget.onSuccess?.call();
       } else if (_enteredPin.length == 6) {
         setState(() {
           _errorMsg = 'رمز عبور اشتباه است.';
@@ -169,7 +173,10 @@ class _PinLockScreenState extends State<PinLockScreen> {
                             IconButton(
                               onPressed: () async {
                                 final ok = await BiometricService.authenticate();
-                                if (ok && mounted) state.unlockApp();
+                                if (ok && mounted) {
+                                  state.unlockApp();
+                                  widget.onSuccess?.call();
+                                }
                               },
                               icon: const Icon(Icons.fingerprint, color: AppColors.accent, size: 28),
                             )

@@ -9,6 +9,7 @@ import '../models/focus_session.dart';
 import '../models/inbox_item.dart';
 import '../models/app_settings.dart';
 import '../database/app_database.dart';
+import '../database/seed_data.dart';
 import '../utils/jalali_calendar.dart';
 
 class AppState extends ChangeNotifier {

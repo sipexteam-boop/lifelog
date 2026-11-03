@@ -7,6 +7,10 @@ class JalaliDate {
 
   const JalaliDate(this.year, this.month, this.day);
 
+  factory JalaliDate.fromDateTime(DateTime date) => JalaliCalendar.fromDateTime(date);
+
+  String get monthName => JalaliCalendar.monthNamesFa[month - 1];
+
   @override
   String toString() => '$year/${month.toString().padLeft(2, '0')}/${day.toString().padLeft(2, '0')}';
 

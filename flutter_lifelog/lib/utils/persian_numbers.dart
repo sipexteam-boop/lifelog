@@ -17,4 +17,20 @@ class PersianNumbers {
     }
     return res;
   }
+
+  static String toEnglish(dynamic input) {
+    if (input == null) return '';
+    final str = input.toString();
+    var res = '';
+    for (var i = 0; i < str.length; i++) {
+      final ch = str[i];
+      final idx = _persianDigits.indexOf(ch);
+      if (idx != -1) {
+        res += idx.toString();
+      } else {
+        res += ch;
+      }
+    }
+    return res;
+  }
 }
